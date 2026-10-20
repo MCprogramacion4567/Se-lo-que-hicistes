@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sé lo que hiciste</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#050506;--panel:#1a1818;--line:#2a2726;--text:#d9d4c8;--dim:#8a8478;--red:#b3271c;--glow:#ff4433;--ian:#5c6b2f;--me:#7a2620;--mono:'IBM Plex Mono',ui-monospace,monospace;--type:'Special Elite','Courier New',monospace}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--mono)}
+body{display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));overflow:hidden}
+#bg{position:fixed;inset:0;transition:background .8s;background:linear-gradient(180deg,#02050a,#0a1017 35%,#11161a)}
+#bg.street{background:radial-gradient(circle at 50% 20%,rgba(255,251,222,.12),transparent 22%),linear-gradient(180deg,#040510,#0a1220 35%,#101720)}
+#bg.school{background:radial-gradient(circle at 50% 18%,rgba(255,208,94,.08),transparent 22%),linear-gradient(180deg,#0d0d09,#1a1811 45%,#090b0e)}
+#bg.roof{background:radial-gradient(circle at 50% 18%,rgba(184,169,255,.12),transparent 22%),linear-gradient(180deg,#080b11,#10171e 38%,#090b0f)}
+#bg.red{background:radial-gradient(circle at 50% 20%,rgba(255,80,60,.12),transparent 22%),linear-gradient(180deg,#0a0808,#1b0d10 35%,#09090b)}
+.phone{position:relative;width:100%;max-width:420px;height:min(860px,calc(100dvh - 24px));background:#0d0c0e;border-radius:40px;border:1px solid #232020;box-shadow:0 0 0 8px #000,0 0 60px rgba(179,39,28,.1),0 30px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:22px;background:#000;border-radius:0 0 16px 16px;z-index:5}
+.bar{display:flex;justify-content:space-between;padding:10px 24px 4px;font-size:12px;color:var(--dim)}
+.bar>div{display:flex;align-items:center;gap:10px}
+#cfg{background:none;border:0;color:var(--dim);font-size:15px;line-height:1;cursor:pointer;padding:2px}
+#cfg:hover{color:var(--text)}
+#panel{position:absolute;top:36px;right:14px;z-index:6;width:210px;padding:12px;background:#171515;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.6);animation:rise .2s ease both}
+#panel[hidden]{display:none}
+#panel p{margin:0 0 8px;font-size:12px;color:var(--dim)}
+#panel div{display:flex;gap:6px}
+#panel button{flex:1;font:13px var(--mono);color:var(--text);background:transparent;border:1px solid var(--line);padding:7px 0;border-radius:14px;cursor:pointer}
+#panel button:hover{border-color:var(--red)}
+#panel button.on{background:var(--red);border-color:var(--red);color:#050506}
+#panel p+div+p{margin-top:14px}
+#panel input{width:100%;margin:0;accent-color:var(--red)}
+#panel input+p{margin-top:14px}
+.head{display:flex;align-items:center;gap:10px;padding:6px 18px 12px;border-bottom:1px solid var(--line)}
+.av{position:relative;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#333,#111);border:1px solid var(--line);display:grid;place-items:center}
+.av::after{content:'';position:absolute;right:-1px;bottom:-1px;width:10px;height:10px;border-radius:50%;background:var(--red);border:2px solid #0d0c0e;box-shadow:0 0 6px var(--glow)}
+.head b{display:block;font-weight:500;font-size:14px}
+.head small{color:var(--red);font-size:11px}
+#screen{flex:1;overflow-y:auto;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;background:#111013;scroll-behavior:smooth}
+.msg{max-width:84%;animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+.bubble{padding:10px 13px;border-radius:14px;font-size:14.5px;line-height:1.5}
+.typing .bubble::after{content:'';display:inline-block;width:7px;height:14px;margin-left:2px;vertical-align:-2px;background:currentColor;animation:blink .9s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.i{align-self:flex-start}.i .bubble{background:var(--panel);border-left:3px solid var(--red);border-radius:4px 14px 14px 14px}
+.d{align-self:flex-start}.d .bubble{background:var(--panel);border-left:3px solid var(--ian);border-radius:4px 14px 14px 14px;color:#cfd6bd}
+.p{align-self:flex-end}.p .bubble{background:rgba(122,38,32,.35);border-right:3px solid var(--me);border-radius:14px 4px 14px 14px;text-align:right}
+.n{align-self:stretch;max-width:100%;font-family:var(--type);color:var(--dim);font-size:13.5px;line-height:1.65;padding:2px 4px 2px 12px;border-left:2px solid var(--line)}
+.n .bubble{padding:0;font-size:inherit}
+.s{align-self:center;max-width:92%;text-align:center}
+.s .bubble{background:rgba(179,39,28,.12);border:1px solid var(--red);color:var(--glow);font-family:var(--type);font-size:17px;letter-spacing:1px;border-radius:8px;text-shadow:0 0 8px rgba(255,68,51,.6)}
+.scene{text-align:center;padding:16px 14px 12px;border:1px solid rgba(217,212,200,.16);border-radius:10px;background:linear-gradient(155deg,#1d2437,#0b0d15 72%);animation:rise .8s ease both}
+.scene.school{background:linear-gradient(155deg,#25251e,#11120f 72%)}
+.scene.red{background:linear-gradient(155deg,#30241f,#13100f 72%)}
+.scene div:first-child{font-size:29px;letter-spacing:2px;min-height:44px}
+.scene div:last-child{color:var(--dim);font-family:var(--type);font-size:12px;margin-top:4px}
+.choices{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;animation:rise .4s ease both}
+.choices button{font:13px/1.35 var(--mono);color:var(--text);background:transparent;border:1px solid var(--line);padding:9px 14px;border-radius:18px;cursor:pointer;text-align:right;transition:border-color .15s,background .15s}
+.choices button:hover{border-color:var(--red);background:rgba(179,39,28,.1)}
+.choices button:active{transform:scale(.97)}
+button:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.end{align-self:stretch;text-align:center;padding:20px 18px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,rgba(179,39,28,.08),transparent);animation:rise .5s ease both}
+.end .ic{font-size:32px}
+.end h2{margin:6px 0 0;font:400 20px var(--type);letter-spacing:2px;color:var(--glow);text-shadow:0 0 10px rgba(255,68,51,.5)}
+.end p{margin:6px 0 0;font-size:13px;color:var(--dim);font-style:italic}
+.end .cnt{font-style:normal;margin-top:12px}
+.end button{margin-top:14px;font:13px var(--mono);color:#050506;background:var(--red);border:0;padding:10px 20px;border-radius:18px;cursor:pointer}
+.end button:hover{background:var(--glow)}
+#flash{position:absolute;inset:0;background:var(--glow);opacity:0;pointer-events:none;z-index:10}
+#flash.on{animation:fl .4s}
+@keyframes fl{15%{opacity:.8}30%{opacity:0}45%{opacity:.45}60%{opacity:0}}
+.phone.shake{animation:sh .4s}
+@keyframes sh{20%{transform:translateX(-6px) rotate(-.6deg)}40%{transform:translateX(6px) rotate(.6deg)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (max-width:460px){body{padding:0}.phone{border-radius:0;border:0;box-shadow:none;height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+#bgi{position:fixed;inset:-30px;background-size:cover;background-position:center;filter:blur(16px) brightness(.4) saturate(.85);opacity:0;transition:opacity .9s}
+.pic{flex-shrink:0;align-self:stretch;border:1px solid rgba(217,212,200,.16);border-radius:10px;overflow:hidden;background:#0b0d15;animation:rise .8s ease both}
+.pic .frame{position:relative;aspect-ratio:16/10;overflow:hidden}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:kb 14s ease-out both}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.07)}}
+.pic img.rev{opacity:0;transition:opacity 1.4s ease}
+.pic img.rev.on{opacity:1}
+.pic.dim img{filter:brightness(.32) contrast(1.15) saturate(.7)}
+.pic .frame::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(5,5,6,.88),transparent 48%),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45))}
+.pic .cap{position:absolute;left:12px;right:12px;bottom:9px;z-index:2;font:12px/1.4 var(--type);color:#d3cdbf;text-shadow:0 1px 4px #000}
+.pic.tall .frame{aspect-ratio:3/4}
+.pic.tall img{object-position:50% 35%}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="bgi"></div>
+<div class="phone" id="phone">
+  <div class="notch"></div><div id="flash"></div>
+  <div class="bar"><span>23:43</span><div><span id="cnt">Finales 0/6</span><button id="cfg" aria-label="Configuración" aria-expanded="false">⚙️</button></div></div>
+  <div id="panel" hidden><p>Velocidad del texto</p><div><button data-v="1">x1</button><button data-v="2">x2</button><button data-v="3">x3</button></div><p>Volumen del teclado</p><input type="range" id="vol" min="0" max="100" step="5" aria-label="Volumen del teclado"><p>Ambiente y efectos</p><input type="range" id="amb" min="0" max="100" step="5" aria-label="Volumen de ambiente y efectos"></div>
+  <div class="head"><div class="av">📵</div><div><b>Desconocido</b><small>en línea</small></div></div>
+  <div id="screen" aria-live="polite"></div>
+</div>
+<script>
+/* Tipos: n narración · i desconocido · d otro personaje · p vos · s grito
+   Nodo: m mensajes, c opciones [texto, destino], n siguiente automático, e final, t fondo, s escena */
+const F6=["🚨","FINAL 6","Reformatorio"];
+const S={
+start:{t:"night",a:null,m:[["i","Sé lo que hiciste."],["i","Vení al liceo a las 23:43."]],c:[["Ir al liceo","go"],["No ir","no"]]},
+go:{t:"street",a:"viento",s:["img/calle.jpg","El liceo espera bajo la noche vacía."],m:[["n","Llegás al liceo a la hora indicada. Todas las calles están vacías. Mirás a tu alrededor buscando a la persona que te mandó el mensaje."],["n","Al final de la cuadra, a la derecha, ves una silueta negra que está de espaldas."],["g",["img/silueta.jpg","Una silueta, de espaldas.",null,"tall"]]],c:[["Acercarte a hablarle","sil"],["Quedarte donde estás","stay"]]},
+sil:{t:"red",m:[["n","Te acercás a la silueta y le tocás la espalda. La figura se da vuelta: es un hombre con una máscara y ojos rojos."],["s","¡SALIIIIIIIIIIIIIIII!","grito"],["n","Saca un arma, te dispara dos veces en el pecho y sale corriendo."],["n","Quedás tirado en la vereda. Intentás pedir ayuda, pero nadie acude a rescatarte. Finalmente, morís desangrado."]],e:["🩸","FINAL 1","Curiosidad fatal"]},
+stay:{m:[["n","Ignorás la silueta a la distancia y te quedás donde estás. Minutos después, recibís otro mensaje:"],["i","Entrá al liceo."]],c:[["Entrar al liceo","in"],["Volver a tu casa","no"]]},
+in:{t:"school",s:["img/pasillo-oscuro.jpg","El edificio, a oscuras y en silencio."],m:[["n","La puerta, sorprendentemente, estaba abierta. Avanzás por el edificio con la luz de tu teléfono."],["n","Escuchás un ruido que viene de un salón. Decidís entrar. Encendés la luz y ves que todo está completamente destruido."],["s","¡¿QUIÉN ANDA AHÍ?!"],["n","Es un guardia de seguridad que viene corriendo hacia vos."]],c:[["Salir del salón y correr","run"],["Esconderte en el salón","hide"]]},
+run:{t:"roof",s:["img/azotea.jpg","En la azotea, alguien ya te estaba esperando."],m:[["n","Salís del salón y corrés."],["d","¡HEY, DETENTE!"],["n","Seguís corriendo sin mirar atrás. Subís a la azotea pensando que ahí vas a poder esconderte."],["n","Ahí es cuando lo ves. Un tipo misterioso, con una capa y un olor bastante desagradable, se da vuelta."],["n","Recordás dónde lo habías visto: en las noticias. Es Ian Carvajal, el hombre que llenó de caca las paredes del liceo y que después fue enviado a un correccional, del cual se escapó."],["d","Así que decidiste venir."],["p","Vos... ¿qué querés de mí?"],["d","Sé lo que hiciste. El desastre de los baños no fue un error. Los tubos... fuiste vos, ¿no es cierto?"],["n","Recordás tu secreto: vos destruiste los baños para que cancelaran las clases. Como Ian acaba de descubrirlo, te quedás callado."],["d","Tus habilidades para llenar los baños de caca son impresionantes. Unamos fuerzas."]],c:[["Aceptar","ian1"],["Rechazar","ian2"]]},
+ian1:{m:[["n","Aceptás su propuesta."],["n","Juntos se convierten en los Cargadores de Baños."]],e:["🚽","FINAL 2","Los Cargadores de Baños"]},
+ian2:{t:"red",m:[["p","Yo solo hice eso para cancelar las clases. Nunca tuve tal intención."],["d","Te arrepentirás de esto."],["n","Esquivás al guardia y salís por la puerta. Al llegar a tu casa, no podés creer lo que ves:"],["g",["img/casa.jpg","Tu casa.","img/casa-caca.jpg"]],["n","toda la casa y el patio están completamente cubiertos de caca."]],e:["💩","FINAL 3","La venganza de Ian"]},
+hide:{m:[["n","Te escondés debajo del escritorio del profesor. Oís al guardia entrar, encender las luces y revisar el lugar. Cuando está a punto de llegar hasta vos, murmura:"],["d","¿A dónde se habrá ido?"],["n","El guardia se va y lo escuchás pedir refuerzos por radio. No podés correr más riesgos: volvés a tu casa y te acostás a dormir."],["n","A la mañana siguiente, poco después de despertarte, recibís un mensaje:"],["i","Veo que decidiste huir. Recibirás las consecuencias."]],n:"school"},
+no:{t:"night",a:"viento",s:["img/casa.jpg","La casa parece tranquila... por ahora."],m:[["n","Decidís no ir. Ignorás el mensaje y te acostás a dormir. Al día siguiente, poco después de despertarte, recibís otro mensaje:"],["i","Veo que decidiste no venir. Recibirás las consecuencias."]],n:"school"},
+school:{t:"school",a:"pajaros",m:[["g",["img/liceo.jpg","A la mañana siguiente, en el liceo."]],["w",2800],["a","clase"],["n","Lo volvés a ignorar y vas al liceo. Al entrar, notás que la gente te mira y habla de vos a tus espaldas. En el salón todos se quedan en silencio y ninguno de tus amigos te saluda."],["a",null],["g",["img/despacho.jpg","El despacho del director."]],["n","Poco después te llaman al despacho del director. Está sentado junto a varios profesores. Te dicen que te sientes y el director te mira:"],["d","Recibimos información de que fuiste vos el responsable del incidente de los baños. ¿Realmente fuiste vos?"]],c:[["Admitirlo","confess"],["Negarlo","deny"]]},
+confess:{a:null,m:[["p","Sí, fui yo y no me arrepiento. Lo que hice fue necesario por el bien mayor."],["n","El director te mira decepcionado."],["d","Ya veo. Estamos decepcionados de vos. Quedás suspendido durante tres meses."],["n","————— 3 MESES DESPUÉS —————"],["a","clase"],["g",["img/pasillo-claro.jpg","Los pasillos del liceo."]],["n","Volvés al liceo esperando empezar de nuevo y remontar el año. Pero apenas cruzás la puerta, te cae un balde de caca encima."],["n","Aunque la caca no te deja ver nada, escuchás las risas de todos. Los profesores no intervienen y algunos incluso se ríen. Entre las risas, un nombre comienza a resonar:"],["n","«¡Hombre Caca!»"]],e:["💩","FINAL 4","Hombre Caca"]},
+deny:{m:[["p","No, yo no fui. ¿Qué les hace pensar eso?"],["n","El director se sorprende por tu tranquilidad."],["d","Tenemos pruebas que muestran cómo lo hiciste."],["p","¿Pruebas? ¿Me las puede mostrar? Yo no hice tal cosa ni nada parecido."],["n","El director te muestra algunas pruebas: ves tu cara en una cámara del liceo, entrando al baño a la hora del incidente y luego saliendo."]],c:[["Decidir que las pruebas son falsas","fake"],["Admitirlo","confess"]]},
+fake:{m:[["p","¿De dónde salió esa cámara? Nunca la había visto por el liceo. ¿Y esa se supone que es mi cara? Se ve claramente que el pelo y la ropa son diferentes. Puede ser otra persona o incluso una IA. ¿Y qué les asegura que esa es la hora verdadera? ¿Cómo saben que nadie modificó la hora para incriminarme?"],["d","Estas no son las únicas pruebas que hay. Tengo más. Mire estas."]],c:[["Inventar una excusa para irte","excuse"],["Ver las pruebas","see"]]},
+see:{m:[["n","Ves las pruebas y quedás atónito. No sabés de dónde salieron y no podés responder ninguna de las acusaciones. Finalmente, terminás admitiéndolo."]],n:"confess"},
+excuse:{m:[["n","Prendés el celular y hacés como que mirás la hora."],["p","Perdón, director, pero estoy llegando tarde a la consulta con el médico. Hablamos mañana."],["d","¿Consulta con el médico? Nadie me dijo nada de eso. Oíme, esperá..."],["n","Salís corriendo del liceo. Mientras caminás a tu casa, no podés creer lo que está pasando. ¿Quién expuso tu crimen? ¿De dónde salieron esas pruebas?"],["n","Eso ya no importa. Lo que importa es lo que podría pasarte. Tenés que destruir esas pruebas a como dé lugar. Tu vida depende de ello. ¿Cuándo lo vas a hacer?"]],c:[["Ir de noche a destruir las pruebas","night"],["Ir el fin de semana a destruir las pruebas","week"]]},
+night:{t:"red",a:"viento",s:["img/despacho.jpg","El despacho del director, de noche.","dim"],m:[["n","Forzás la cerradura y entrás sigilosamente. Evitando a los guardias, llegás hasta el despacho del director y encontrás su laptop. Tiene contraseña."],["n","Todo lo que sabés de él lo sacaste de su Facebook. ¿Qué contraseña probás?"]],c:[["Probar con el nombre de sus mascotas","pets"],["Probar con el nombre de sus familiares","fam"],["Probar con sus fechas importantes","dates"]]},
+pets:{m:[["n","Gracias al Facebook del director, conocés el nombre de todas sus mascotas. Probás una por una. Cuando estás a punto de bloquear la computadora, recordás el nombre de su perro salchicha:"],["n","Coco."],["n","Lo escribís. Funciona. Borrás todo lo que tenga que ver con vos, dejás todo como estaba y salís con tranquilidad."]],n:"f5"},
+fam:{m:[["n","Probás con los nombres de todos sus familiares. Cuando estás a punto de bloquear la laptop, pensás en su hija Marta. Escribís su nombre."]],n:"alarm"},
+dates:{m:[["n","Probás con las fechas importantes del director. Cuando estás a punto de bloquear la laptop, pensás en la fecha de su casamiento. La escribís."]],n:"alarm"},
+alarm:{t:"red",m:[["s","¡ALARMA!"],["n","Una alarma fuertísima suena por todo el liceo. Fallaste. Los guardias van hacia donde estás. No tenés dónde correr: te atrapan y te llevan a la policía."],["n","Tus crímenes con los baños salen a la luz y, además, te mandan a un reformatorio por entrar ilegalmente al liceo y forzar la cerradura."]],e:F6},
+week:{t:"school",a:"pajaros",s:["img/pasillo-claro.jpg","El liceo, en pleno fin de semana."],m:[["n","Vas el fin de semana por la tarde, porque tus padres no te dejaban salir de noche. Tardás en entrar por la cantidad de profesores que hay."],["n","Finalmente lo conseguís y te abrís camino hacia el despacho del director. Por el camino fallás al esconderte y te cruzás con tu profesora de dibujo."],["d","¿Qué hacés acá?"]],c:[["«Vine a usar la biblioteca. Me dijeron que podía.»","lib"],["«Me dieron ganas de venir.»","want"]]},
+want:{m:[["d","Lo siento, pero no podés venir sin ninguna razón. Te pido que te retires de la institución."],["n","Sin otra opción, te vas y el lunes volvés a clases. El director retoma la conversación y no te queda más remedio que admitirlo."]],n:"confess"},
+lib:{m:[["d","Qué bueno que te dediques a estudiar. Son pocos los chicos de tu edad que se toman el tiempo de leer. Seguí así."],["a",null],["g",["img/despacho.jpg","El despacho del director."]],["n","Tu mentira funciona. Vas directo al despacho creyendo que no hay nadie, pero el director está sentado frente a su laptop. Por instinto, te escondés detrás de la puerta."],["n","Esperás unos segundos y empezás a oír ronquidos: el director se quedó dormido en su silla. Esta es tu oportunidad."]],c:[["Borrar todas las pruebas","all"],["Borrar solo las pruebas importantes","key"]]},
+all:{t:"red",m:[["n","Empezás a borrar todas las pruebas. Cuando falta poco para terminar, sentís que alguien te agarra del brazo: el director se despertó."],["s","¡¿QUÉ ESTÁS HACIENDO EN MI COMPUTADORA?!"],["n","Llama a seguridad y te llevan a la policía. Tus crímenes con los baños salen a la luz y, además, te mandan a un reformatorio por entrar ilegalmente al liceo."]],e:F6},
+key:{m:[["n","Borrás solo las pruebas importantes y salís con tranquilidad."]],n:"f5"},
+f5:{t:"street",a:"pajaros",s:["img/liceo.jpg","Un día más en el liceo."],m:[["n","Al día siguiente, el director intenta retomar la conversación, pero al encender la laptop no encuentra ninguna de las pruebas. No tiene más remedio que pedirte disculpas."],["n","Con el tiempo, los rumores sobre vos se apagan y todos se olvidan de lo que te acusaban. Finalmente, volvés a vivir tu vida normal."]],e:["🧼","FINAL 5","Evidencia borrada"]}
+};
+
+const $=id=>document.getElementById(id), scr=$("screen"), ph=$("phone"), fl=$("flash"), bg=$("bg"), bgi=$("bgi"), cnt=$("cnt");
+const BASE=16, TOTAL=6, KEY="se-lo-que-hiciste-finales", VKEY="se-lo-que-hiciste-velocidad";
+let run=0, skip=false, theme="night", mult=1;
+try{mult=[1,2,3].includes(+localStorage.getItem(VKEY))?+localStorage.getItem(VKEY):1}catch(e){}
+const cfg=$("cfg"), panel=$("panel");
+function setSpeed(v){
+  mult=v;
+  try{localStorage.setItem(VKEY,v)}catch(e){}
+  panel.querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.v===v));
+}
+panel.querySelectorAll("button").forEach(b=>b.onclick=()=>setSpeed(+b.dataset.v));
+cfg.onclick=e=>{e.stopPropagation();panel.hidden=!panel.hidden;cfg.setAttribute("aria-expanded",!panel.hidden)};
+document.addEventListener("click",e=>{if(!panel.hidden&&!panel.contains(e.target)){panel.hidden=true;cfg.setAttribute("aria-expanded","false")}});
+setSpeed(mult);
+
+/* Sonido de teclado (Web Audio, sin archivos) */
+const VOL="se-lo-que-hiciste-volumen";
+let vol=.5, ac=null, nb=null, last=0;
+try{const s=localStorage.getItem(VOL);if(s!==null&&!isNaN(+s))vol=Math.min(1,Math.max(0,+s))}catch(e){}
+const volEl=$("vol");
+volEl.value=Math.round(vol*100);
+function unlock(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
+function tick(ch,force){
+  if(!vol||!ac||ac.state!=="running"||ch===" ")return;
+  const t=ac.currentTime;
+  if(!force&&t-last<.03)return;
+  last=t;
+  if(!nb){
+    nb=ac.createBuffer(1,Math.floor(ac.sampleRate*.04),ac.sampleRate);
+    const d=nb.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  }
+  const s=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain();
+  s.buffer=nb;s.playbackRate.value=.8+Math.random()*.6;
+  f.type="bandpass";f.frequency.value=1800+Math.random()*1400;f.Q.value=.9;
+  g.gain.value=vol*.8;
+  s.connect(f);f.connect(g);g.connect(ac.destination);s.start();
+}
+volEl.oninput=()=>{vol=volEl.value/100;try{localStorage.setItem(VOL,vol)}catch(e){}unlock();tick("a",true)};
+document.addEventListener("pointerdown",unlock);
+
+/* Ambiente y efectos (archivos en la carpeta audio/) */
+const AUD={viento:"audio/viento.mp3",pajaros:"audio/pajaros.mp3",clase:"audio/clase.mp3"},
+      SFX={grito:"audio/grito.mp3"},
+      GAIN={viento:.7,pajaros:.6,clase:.55,grito:1}, AMBK="se-lo-que-hiciste-ambiente";
+let amb=.7, ambName=null, ambEl=null;
+try{const s=localStorage.getItem(AMBK);if(s!==null&&!isNaN(+s))amb=Math.min(1,Math.max(0,+s))}catch(e){}
+const ambInp=$("amb");ambInp.value=Math.round(amb*100);
+Object.values(AUD).concat(Object.values(SFX)).forEach(f=>{const a=new Audio();a.preload="auto";a.src=f});
+const tryPlay=a=>{const p=a.play();if(p&&p.catch)p.catch(()=>{})};
+function fade(a,to,ms,cb){
+  clearInterval(a._t);
+  const from=a.volume,steps=Math.max(1,Math.round(ms/50));let i=0;
+  a._t=setInterval(()=>{
+    i++;a.volume=Math.min(1,Math.max(0,from+(to-from)*i/steps));
+    if(i>=steps){clearInterval(a._t);if(cb)cb()}
+  },50);
+}
+/* setAmbience("viento"|"pajaros"|"clase"|null): cambia el sonido de fondo con fundido */
+function setAmbience(name){
+  name=name||null;
+  if(name===ambName)return;
+  ambName=name;
+  const old=ambEl;ambEl=null;
+  if(old)fade(old,0,1500,()=>old.pause());
+  if(!name)return;
+  const a=new Audio(AUD[name]);a.loop=true;a.volume=0;a._g=GAIN[name];ambEl=a;
+  tryPlay(a);fade(a,amb*a._g,2000);
+}
+function sfx(name){
+  if(!amb)return;
+  const a=new Audio(SFX[name]);a.volume=Math.min(1,amb*GAIN[name]);tryPlay(a);
+}
+ambInp.oninput=()=>{
+  amb=ambInp.value/100;try{localStorage.setItem(AMBK,amb)}catch(e){}
+  unlock();if(ambEl){clearInterval(ambEl._t);ambEl.volume=Math.min(1,amb*ambEl._g)}
+};
+/* el navegador solo deja sonar audio tras un clic: si el ambiente quedó bloqueado, arranca en el primer toque */
+document.addEventListener("pointerdown",()=>{if(ambEl&&ambEl.paused)tryPlay(ambEl)});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const down=()=>{scr.scrollTop=scr.scrollHeight};
+const finals=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}};
+const save=t=>{const f=finals();if(!f.includes(t)){f.push(t);try{localStorage.setItem(KEY,JSON.stringify(f))}catch(e){}}};
+const count=()=>{cnt.textContent="Finales "+finals().length+"/"+TOTAL};
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt)e.textContent=txt;return e};
+const setTheme=t=>{theme=t;bg.className=t==="night"?"":t};
+
+/* Imágenes: precarga + fondo desenfocado detrás del teléfono + tarjeta de imagen */
+(JSON.stringify(S).match(/img\/[\w.-]+\.(?:jpe?g|png|webp)/g)||[]).forEach(f=>{new Image().src=f});
+const IMG=/\.(?:jpe?g|png|webp)$/i;
+let curBg="";
+function setBackdrop(src){
+  if(!src){curBg="";bgi.style.opacity=0;return}
+  if(src===curBg)return;
+  curBg=src;bgi.style.opacity=0;
+  setTimeout(()=>{if(curBg!==src)return;bgi.style.backgroundImage='url("'+src+'")';bgi.style.opacity=.6},450);
+}
+function pic(src,cap,rev,cls){
+  const w=el("div","pic"+(cls?" "+cls:"")), f=el("div","frame"), im=new Image();
+  im.src=src;im.alt=cap;im.onload=down;f.appendChild(im);
+  if(rev){const r=new Image();r.src=rev;r.alt="";r.className="rev";f.appendChild(r)}
+  f.appendChild(el("div","cap",cap));w.appendChild(f);return w;
+}
+
+scr.addEventListener("click",()=>{skip=true});
+
+function scare(){
+  ph.classList.add("shake");fl.classList.add("on");
+  if(navigator.vibrate)navigator.vibrate([80,40,120]);
+  setTimeout(()=>{ph.classList.remove("shake");fl.classList.remove("on")},450);
+}
+
+async function msg(type,text,tok,fx){
+  if(type==="a"){setAmbience(text);return}
+  if(type==="w"){await sleep(text);return}
+  if(type==="g"){
+    const [src,cap,rev,cls]=text, p=pic(src,cap,rev,cls);
+    scr.appendChild(p);down();setBackdrop(src);
+    if(rev){
+      await sleep(1800);if(tok!==run)return;
+      p.querySelector(".rev").classList.add("on");setBackdrop(rev);
+      ph.classList.add("shake");setTimeout(()=>ph.classList.remove("shake"),450);
+      await sleep(1800);
+    }else await sleep(500);
+    return;
+  }
+  const w=el("div","msg "+type), b=el("div","bubble");
+  w.appendChild(b);scr.appendChild(w);down();
+  if(type==="s"){scare();if(fx)sfx(fx)}
+  if(type==="p"){b.textContent=text}
+  else{
+    skip=false;w.classList.add("typing");
+    for(let i=1;i<=text.length;i++){
+      if(tok!==run)return;
+      b.textContent=text.slice(0,i);down();tick(text[i-1]);
+      if(!skip)await sleep(BASE/mult);
+    }
+    w.classList.remove("typing");
+  }
+  await sleep(skip?150:320/mult);
+}
+
+function choices(list){
+  const w=el("div","choices");
+  list.forEach(([label,next])=>{
+    const b=el("button","",label);
+    b.onclick=async()=>{
+      w.remove();
+      const tok=run;
+      await msg("p",label,tok);
+      play(next,tok);
+    };
+    w.appendChild(b);
+  });
+  scr.appendChild(w);down();
+}
+
+function ending([icon,title,sub]){
+  save(title);count();
+  const w=el("div","end");
+  w.append(el("div","ic",icon),el("h2","",title),el("p","",sub));
+  w.append(el("p","cnt","Finales descubiertos: "+finals().length+" de "+TOTAL));
+  const b=el("button","","Volver a empezar");
+  b.onclick=start;w.appendChild(b);
+  scr.appendChild(w);down();
+}
+
+async function play(id,tok=run){
+  const n=S[id];
+  if(n.t)setTheme(n.t);
+  if("a" in n)setAmbience(n.a);
+  if(n.s){
+    if(IMG.test(n.s[0])){
+      scr.appendChild(pic(n.s[0],n.s[1],null,n.s[2]));down();setBackdrop(n.s[0]);
+    }else{
+      const c=el("div","scene "+theme);
+      c.append(el("div","",n.s[0]),el("div","",n.s[1]));
+      scr.appendChild(c);down();
+    }
+  }
+  for(const [t,x,fx] of n.m){
+    if(tok!==run)return;
+    await msg(t,x,tok,fx);
+  }
+  if(tok!==run)return;
+  if(n.n)return play(n.n,tok);
+  if(n.c)choices(n.c);else ending(n.e);
+}
+
+function start(){
+  run++;scr.innerHTML="";setTheme("night");setBackdrop(null);setAmbience(null);count();
+  play("start",run);
+}
+start();
+</script>
+</body>
+</html>
